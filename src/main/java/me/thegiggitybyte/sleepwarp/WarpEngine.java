@@ -2,7 +2,6 @@ package me.thegiggitybyte.sleepwarp;
 
 import me.thegiggitybyte.sleepwarp.config.SleepWarpConfig;
 import me.thegiggitybyte.sleepwarp.runnable.*;
-import net.fabricmc.fabric.api.entity.event.v1.EntitySleepEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
@@ -11,9 +10,7 @@ import net.minecraft.server.world.ChunkHolder;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.chunk.WorldChunk;
 
@@ -31,8 +28,6 @@ public class WarpEngine {
     
     private WarpEngine() {
         random = new Random();
-        
-        EntitySleepEvents.ALLOW_SLEEP_TIME.register(this::allowSleepTime);
         ServerTickEvents.END_WORLD_TICK.register(this::onEndTick);
     }
     
@@ -40,14 +35,7 @@ public class WarpEngine {
         if (instance != null) throw new AssertionError();
         instance = new WarpEngine();
     }
-    
-    private ActionResult allowSleepTime(PlayerEntity player, BlockPos sleepingPos, boolean vanillaResult) {
-        if (!vanillaResult && (player.getWorld().getTimeOfDay() % DAY_LENGTH_TICKS > 12542))
-            return ActionResult.SUCCESS;
-        else
-            return ActionResult.PASS;
-    }
-    
+
     private void onEndTick(ServerWorld world) {
         // Pre-warp checks.
         if (!world.isSleepingEnabled()) return;
